@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  frontend:
+    build: .
+    ports:
+      - "8080:80"   # expose nginx 80 to host 8080 for production
+    environment:
+      - REACT_APP_API_BASE_URL=http://api:8000
+    depends_on:
+      - api
+
+  api:
+    image: routescanner-api:latest    # replace with your API image or use build: ../api
+    ports:
+      - "8000:8000"

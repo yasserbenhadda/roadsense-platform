@@ -1,0 +1,42 @@
+name: Lighthouse CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Serve build folder
+        run: |
+          npx -y serve build -l 8080 &
+          sleep 6
+
+      - name: Run Lighthouse
+        run: |
+          npx -y lighthouse http://localhost:8080 --output=json --output=html --output-path=./lighthouse-report --chrome-flags="--no-sandbox"
+
+      - name: Upload Lighthouse reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-report
+          path: |
+            ./lighthouse-report.report.html
+            ./lighthouse-report.report.json
