@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+sqlalchemy
+geoalchemy2          # Pour gérer PostGIS avec Python
+psycopg2-binary      # Driver PostgreSQL
+scikit-learn
+xgboost
+pandas
+numpy
