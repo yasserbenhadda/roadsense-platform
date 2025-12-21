@@ -1,0 +1,78 @@
+services:
+  crack-detection-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: crack-detection-api
+    ports:
+      - "8000:8000"
+    environment:
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+      - MINIO_SECURE=false
+      - MINIO_BUCKET_NAME=crack-detection
+      - MINIO_ANNOTATED_BUCKET=annotated-images
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=crack_detection
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+    volumes:
+      - ./weights:/app/weights
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./config:/app/config
+    depends_on:
+      minio:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+    networks:
+      - crack-detection-network
+    restart: unless-stopped
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio-data:/data
+    networks:
+      - crack-detection-network
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres-crack-detection
+    environment:
+      - POSTGRES_DB=crack_detection
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - crack-detection-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  minio-data:
+  postgres-data:
+
+networks:
+  crack-detection-network:
+    driver: bridge
+

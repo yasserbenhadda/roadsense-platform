@@ -1,0 +1,8 @@
+names:
+- crack
+- pothole
+nc: 2
+path: /Users/macbookpro/Desktop/detection des fissures AI/data
+test: test
+train: train
+val: val
