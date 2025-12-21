@@ -37,7 +37,7 @@ RUN chmod +x /docker-entrypoint.sh
 RUN mkdir -p weights logs data/train data/val data/test
 
 # Expose port
-EXPOSE 8000
+EXPOSE 8002
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
@@ -45,7 +45,7 @@ ENV PYTHONPATH=/app
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD python -c "import requests; requests.get('http://localhost:8000/health')" || exit 1
+    CMD python -c "import requests; requests.get('http://localhost:8002/health')" || exit 1
 
 # Use entrypoint script
 ENTRYPOINT ["/docker-entrypoint.sh"]

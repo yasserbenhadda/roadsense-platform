@@ -18,5 +18,5 @@ python scripts/init_database.py || echo "Database initialization failed or alrea
 
 # Start the API
 echo "Starting API server..."
-exec uvicorn app.api.main:app --host 0.0.0.0 --port 8000
+exec uvicorn app.api.main:app --host 0.0.0.0 --port 8002
 
